@@ -16,6 +16,7 @@
  */
 
 import { Component, createRef } from 'react';
+import { MessageVersion, parseMessage, serializeMessage, V0MessageType } from 'request-address';
 import { IAccount } from '../../api/account';
 import Guide from './guide';
 import { Header } from '../../components/layout';
@@ -44,16 +45,47 @@ class Moonpay extends Component<Props, State> {
   public readonly state: State = {};
 
   private ref = createRef<HTMLDivElement>();
+  private iframeRef = createRef<HTMLIFrameElement>();
   private resizeTimerID?: any;
 
   public componentDidMount() {
     this.onResize();
     window.addEventListener('resize', this.onResize);
+    window.addEventListener('message', this.onMessage);
   }
 
   public componentWillUnmount() {
     window.removeEventListener('resize', this.onResize);
+    window.removeEventListener('message', this.onMessage);
   }
+
+  private onShare = () => {
+    const { current } = this.iframeRef;
+
+    if (!current) {
+      return;
+    }
+
+    const message = serializeMessage({
+      version: MessageVersion.V0,
+      type: V0MessageType.Address,
+      bitcoinAddress: 'tb1notreal',
+      signature: 'HnotReal=',
+    });
+
+    current.contentWindow?.postMessage(message, '*');
+  };
+
+  private onMessage = (e: MessageEvent) => {
+    try {
+      const message = parseMessage(e.data);
+
+      alert(JSON.stringify(message, undefined, 2));
+    } catch (e) {
+      // ignore messages that could not be parsed
+      // probably not intended for us, anyway
+    }
+  };
 
   private onResize = () => {
     if (this.resizeTimerID) {
@@ -96,11 +128,13 @@ class Moonpay extends Component<Props, State> {
         <div className="container">
           <div className={style.header}>
             <Header title={<h2>{t('buy.info.title', { name })}</h2>} />
+            <button onClick={this.onShare}>share fake address</button>
           </div>
           <div ref={this.ref} className="innerContainer">
             <div className="noSpace" style={{ height }}>
               <Spinner text={t('loading')} />
               <iframe
+                ref={this.iframeRef}
                 title="Moonpay"
                 width="100%"
                 height={height}

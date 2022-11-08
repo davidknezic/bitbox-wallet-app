@@ -22,12 +22,12 @@ const (
 	// - need to provide a valid email addr to receive a check code;
 	//   any temp email service like fakermail.com will do
 	moonpayAPITestPubKey = "pk_test_e9i4oaa4J7eKo8UI3Wm8QLagoskWGjXN"
-	moonpayAPITestURL    = "https://buy-staging.moonpay.com"
+	moonpayAPITestURL    = "https://widget.staging.pocketbitcoin.com"
 
 	// moonpayAPILivePubKey is the production API key for real transactions.
 	// It is ok for it to be public.
 	moonpayAPILivePubKey = "pk_live_jfhWEt55szMLar8DhQWWiDwteX1mftY"
-	moonpayAPILiveURL    = "https://buy.moonpay.com"
+	moonpayAPILiveURL    = "https://widget.pocketbitcoin.com"
 )
 
 // Here's the list of all supported currencies:
